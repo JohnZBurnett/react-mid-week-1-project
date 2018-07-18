@@ -14,6 +14,7 @@ class App extends Component {
 			message: "",
 			subtitle: "",
 			savedMessages: [],
+			savedRecipients: [],
 		};
 	}
 
@@ -28,7 +29,10 @@ class App extends Component {
 
 	handleButtonClick = (event) => {
 		if(event.target.value === 'like') {
-			let obj = {message: this.state.message, subtitle: this.state.subtitle}
+			let obj = {checked: false, 
+				message: this.state.message, 
+				subtitle: this.state.subtitle
+			}
 			//updated so we dont mutate our state
 			let updatedSavedMessages = this.state.savedMessages.slice()
 			//push message, subtitle obj into updated
@@ -76,26 +80,63 @@ class App extends Component {
 
   handleEmailSubmit = (event, formState) => {
   	event.preventDefault(); 
+  	let obj = {
+  		name: formState.recipientValue,
+  		email: formState.emailValue,
+  	};
+  	let updatedSavedRecipients = this.state.savedRecipients.slice();
+  	updatedSavedRecipients.push(obj); 
+  	this.setState({
+  		savedRecipients: updatedSavedRecipients
+  	})
+
   	console.log("in handleEmailSubmit");
   }
 
 	//show the saved messages underneath the form
 	displaySavedMessages = () => (
-		this.state.savedMessages.map((savedMessage) => (
-			<li>Message: {savedMessage.message}{savedMessage.subtitle}</li>
+		this.state.savedMessages.map((savedMessage, idx) => (
+			<li><input type="checkbox" id={idx}/>Message: {savedMessage.message}{savedMessage.subtitle}</li>
 			)
 		)
 	)
+
+	listRecipients = () => (
+	  this.state.savedRecipients.map( (recipient) => (
+	  	<li><a href={"mailto:" + recipient.email + "?subject=Insults" + "&body=" + this.getAllCheckedInsults()}>{recipient.name}</a></li>
+	  ))
+	)
+
+	getAllCheckedInsults = () => {
+		let checkedMessages = this.state.savedMessages.filter(savedMessage =>  savedMessage.checked)
+		let body = checkedMessages.map( checkedMessage => checkedMessage.message + checkedMessage.subtitle + "\n").join(",")
+		return body; 
+		console.log("BODY:", body)
+	}
+
+	handleCheckboxClick = (event) => {
+		if (event.target.type === "checkbox") {
+			let updatedMessages = this.state.savedMessages.slice();
+			updatedMessages[event.target.id].checked = !updatedMessages[event.target.id].checked; 
+			this.setState({
+				savedMessages: updatedMessages,
+			})
+
+		}
+	}
 
   render() {
     return (
       <div className="App">
       	<Form onSubmit={this.handleSubmit}/>
       	{this.generateMessage()}
-				<ul>
+				<ul onClick={this.handleCheckboxClick}>
 					{this.displaySavedMessages()}
 				</ul>
 		<EmailForm onSubmit={this.handleEmailSubmit}/>
+		  <ul>
+			{this.listRecipients()}
+		  </ul>
       </div>
     );
   }
