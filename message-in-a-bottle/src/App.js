@@ -2,15 +2,17 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Form from './components/Form.js';
+import Message from './components/Message.js'
 
 class App extends Component {
 	constructor() {
-		super(); 
+		super();
 
 		this.state = {
 			submitted: false,
-			message: "", 
-			subtitle: ""
+			message: "",
+			subtitle: "",
+			savedMessages: [],
 		};
 	}
 
@@ -23,16 +25,37 @@ class App extends Component {
   	});
   }
 
+	handleButtonClick = (event) => {
+		if(event.target.value === 'like') {
+			let obj = {message: this.state.message, subtitle: this.state.subtitle}
+			//updated so we dont mutate our state
+			let updatedSavedMessages = this.state.savedMessages.slice()
+			//push message, subtitle obj into updated
+			updatedSavedMessages.push(obj)
+			this.setState({
+				savedMessages: updatedSavedMessages,
+			})
+		} else if(event.target.value === 'dislike') {
+			this.setState({
+				submitted: false,
+				message: "",
+				subtitle: "",
+			})
+		}
+	}
+
   generateMessage = () => {
   	if (this.state.submitted) {
   		return(
-  		 <Message />
+  		 <Message message={this.state.message} subtitle={this.state.subtitle} onButtonClick={this.handleButtonClick}/>
   		)
   	} else {
-  		<p>"Fill out the form!!!!"</p>
+  		return (
+				<p>"Fill out the form!!!!"</p>
+			)
   	}
   }
-  
+
   handleSubmit = (event, formState) => {
 
   	const configObj = {
@@ -50,11 +73,22 @@ class App extends Component {
   	console.log(this)
   }
 
+	//show the saved messages underneath the form
+	displaySavedMessages = () => (
+		this.state.savedMessages.map((savedMessage) => (
+			<li>Message: {savedMessage.message}{savedMessage.subtitle}</li>
+			)
+		)
+	)
+
   render() {
     return (
       <div className="App">
       	<Form onSubmit={this.handleSubmit} test="test"/>
       	{this.generateMessage()}
+				<ul>
+					{this.displaySavedMessages()}
+				</ul>
       </div>
     );
   }
