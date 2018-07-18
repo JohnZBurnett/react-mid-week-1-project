@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import Form from './components/Form.js';
 import Message from './components/Message.js'
+import EmailForm from './components/EmailForm.js' 
 
 class App extends Component {
 	constructor() {
@@ -73,6 +74,11 @@ class App extends Component {
   	console.log(this)
   }
 
+  handleEmailSubmit = (event, formState) => {
+  	event.preventDefault(); 
+  	console.log("in handleEmailSubmit");
+  }
+
 	//show the saved messages underneath the form
 	displaySavedMessages = () => (
 		this.state.savedMessages.map((savedMessage) => (
@@ -84,11 +90,12 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-      	<Form onSubmit={this.handleSubmit} test="test"/>
+      	<Form onSubmit={this.handleSubmit}/>
       	{this.generateMessage()}
 				<ul>
 					{this.displaySavedMessages()}
 				</ul>
+		<EmailForm onSubmit={this.handleEmailSubmit}/>
       </div>
     );
   }
