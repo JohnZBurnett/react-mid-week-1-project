@@ -8,7 +8,7 @@ class Form extends Component {
 
 		this.state = {
 			value: '',
-			selectValue: '',
+			selectValue: '/asshole/:from',
 		};
 	}
 
@@ -36,11 +36,13 @@ class Form extends Component {
   render(){
   	return(
   	  <div>
-  	  	<form>
+  	  	<form onSubmit={(event) => this.props.onSubmit(event, this.state)} >
   	  	  <select id="endpoints" value={this.state.selectValue} onChange={(event) => this.handleChange(event)}>
   	  	  	{this.generateEndpointOptions()}]
   	  	  </select>
   	  	  <input type="text" id="name" value={this.state.value} onChange={(event) => this.handleChange(event)}/>
+  	  	  <input type="submit" />
+
   	  	</form>
   	    {console.log("Form")}
   	  </div>
